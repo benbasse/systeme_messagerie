@@ -8,89 +8,79 @@ use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index($id)
     {
-        //
+        $questions = Question::where('id_module', $id);
+
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Questions récupérées avec succès',
+            'status_body' => $questions
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $questions = new Question();
+        $questions->id_module = $request->id_module;
+        $questions->contenue = $request->contenue;
+
+        $questions->save();
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Question ajouté avec succes',
+            'status_body' => $questions
+        ]);
+
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Question $question)
     {
-        //
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Question récupérée avec succès',
+            'status_body' => $question
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Question $question)
     {
-        //
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Modification de la question',
+            'status_body' => $question
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Question $question)
     {
-        //
+        $question->update([
+            'id_module' => $request->id_module,
+            'contenue' => $request->contenue,
+        ]);
+
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Question mise à jour avec succès',
+            'status_body' => $question
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Question $question)
     {
-        //
+        $question->delete();
+
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Question supprimée avec succès',
+            'status_body' => null
+        ]);
     }
 
-
-    // Les methodes que j'ai ajoute dont on a le model module
-    public function showModuleQuestions($moduleId)
-    {
-        // Récupérer les questions du module
-        $module = Module::with('questions')->find($moduleId);
-        $questions = $module->questions;
-
-        // Passer les données à la vue
-        return view('questions.showModuleQuestions', compact('module', 'questions'));
-    }
-
-    public function showQuestionAndAnswers($questionId)
-    {
-        // Récupérer la question avec les réponses associées
-        $question = Question::with('reponses')->find($questionId);
-
-        // Passer les données à la vue
-        return view('messages.show', compact('questions'));
-    }
-
-    public function getAnswers($questionId)
-    {
-        // Récupérer les réponses de la question spécifiée
-        $question = Question::with('reponses')->find($questionId);
-
-        // Retourner les réponses en format JSON
-        return response()->json(['reponses' => $question->reponses]);
-    }
 }

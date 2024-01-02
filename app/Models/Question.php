@@ -9,6 +9,11 @@ class Question extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'id_module',
+        'contenue'
+    ];
+
     public function module()
     {
         return $this->belongsTo(Module::class);
