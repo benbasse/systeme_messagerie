@@ -10,12 +10,16 @@ class ReponseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($id)
     {
-        $reponse = Reponse::all();
-        return view("", compact("reponse"));
-    }
+        $reponses = Reponse::where('id_questions',$id);
 
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Réponses récupérées avec succès',
+            'status_body' => $reponses
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -29,20 +33,32 @@ class ReponseController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'id_questions' => 'required|integer',
+            'contenue' => 'required',
+        ]);
+
         $reponse = new Reponse();
-        $reponse->id_module = $request->id_module;
+        $reponse->id_questions = $request->id_questions;
         $reponse->contenue = $request->contenue;
         $reponse->save();
-        return redirect()->route("")->with("success","reponse");
-    }
 
+        return response()->json([
+            'status_code' => 201,
+            'status_message' => 'Réponse ajoutée avec succès',
+            'status_body' => $reponse
+        ]);
+    }
     /**
      * Display the specified resource.
      */
     public function show(Reponse $reponse)
     {
-        $reponse = Reponse::findOrFail($reponse->id_module);
-        return view("", compact("reponse"));
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Réponse récupérée avec succès',
+            'status_body' => $reponse
+        ]);
     }
 
     /**
@@ -58,7 +74,21 @@ class ReponseController extends Controller
      */
     public function update(Request $request, Reponse $reponse)
     {
-        //
+        $request->validate([
+            'id_questions' => 'required|integer',
+            'contenue' => 'required',
+        ]);
+
+        $reponse->update([
+            'id_questions' => $request->id_questions,
+            'contenue' => $request->contenue,
+        ]);
+
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Réponse mise à jour avec succès',
+            'status_body' => $reponse
+        ]);
     }
 
     /**
@@ -66,6 +96,12 @@ class ReponseController extends Controller
      */
     public function destroy(Reponse $reponse)
     {
-        //
+        $reponse->delete();
+
+        return response()->json([
+            'status_code' => 200,
+            'status_message' => 'Réponse supprimée avec succès',
+            'status_body' => null
+        ]);
     }
 }
